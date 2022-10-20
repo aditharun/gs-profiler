@@ -25,12 +25,12 @@ If you do not have the following packages installed, do the following:
     ```install.packages(c("tidyverse", "cowplot", "gridExtra"))```
 
 Get one of the following (preferably one of the first two, though they all work): 
-  a) URL to their google scholar
-  b) User ID to their google scholar (a part of the URL)
-  c) Researcher's name (as it appears on their Google Scholar profile)
+  - URL to their google scholar
+  - User ID to their google scholar (a part of the URL)
+  - Researcher's name (as it appears on their Google Scholar profile)
 
-The exact command to run for each of the following three scenarios: 
-  a) ```Rscript main.R --url '{url}'``` where {url} is the url of the google scholar page surrounded by single quotes
-  b) ```Rscript main.R --user_id '{user_id}'``` where {user_id} is the user id of the google scholar page surrounded by single quotes
-  c) ```Rscript main.R --name '{name}'``` where {name} is the name of the researcher as it appears on their profile (e.g., 'Andrej Karpathy')
+The exact command to run for each of the following three scenarios, respectively: 
+  - ```Rscript main.R --url '{url}'``` where {url} is the url of the google scholar page surrounded by single quotes
+  - ```Rscript main.R --user_id '{user_id}'``` where {user_id} is the user id of the google scholar page surrounded by single quotes
+  - ```Rscript main.R --name '{name}'``` where {name} is the name of the researcher as it appears on their profile (e.g., 'Andrej Karpathy')
   
