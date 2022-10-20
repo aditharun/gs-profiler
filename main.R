@@ -9,9 +9,6 @@
 # spits out csv of the number of papers published in each journal
 # spits out plot of the number of papers published in each journal 
 # stores data in a folder on your computer 
-	#(NEED WAY TO STORE DATA NOT WITH INTERMEDIATE PRODUCTS)
-	#tmp directory and results directory (for pdf and table csv final)
-	#store in a folder with the subjectid
 #
 
 library(tidyverse)
