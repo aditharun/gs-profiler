@@ -79,7 +79,7 @@ nw <- (11/16)*nyrs + 4.25
 #height = 9 (4yr) - 12 (20yr)
 #width = 7 (4yr) - 18 (20yr)
 
-ggsave(plotpath, p, height=nh, width=nw, units="in")
+ggsave(plotpath, p, height=nh, width=nw, units="in", limitsize=FALSE)
 
 tablepath <- file.path(resultspath, "journal-count-table.csv")
 
@@ -87,11 +87,11 @@ write_csv(x=ct.table, file=tablepath)
 
 pct.table <- ct.table %>% arrange(desc(`# of Pubs`)) %>% mutate(j=Journal) %>% mutate(j=str_wrap(j, width=40)) %>% mutate(j=factor(j, levels=unique(j))) %>% ggplot(aes(y=`# of Pubs`, groups=j, x=j)) + geom_col() + theme_minimal() + theme(axis.text.y = element_text(size=13), axis.text.x=element_text(size=17)) + coord_flip() + xlab("") 
 
-ggsave(file.path(resultspath, "journal-counts.pdf"), pct.table, height=nh_j, width=nw, units="in")
+ggsave(file.path(resultspath, "journal-counts.pdf"), pct.table, height=nh_j, width=nw, units="in", limitsize=FALSE)
 
 pj <- p.jhist + ggtitle(ptitle) + theme(plot.title=element_text(hjust=0.5, size=17)) + theme(legend.position="bottom")
 
-ggsave(file.path(resultspath, "journal-counts-by-year.pdf"), pj, height=nh_j, width=nw, units='in')
+ggsave(file.path(resultspath, "journal-counts-by-year.pdf"), pj, height=nh_j, width=nw, units='in', limitsize=FALSE)
 
 
 
