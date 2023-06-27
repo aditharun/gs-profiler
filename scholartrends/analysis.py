@@ -5,6 +5,7 @@ import os
 import sys
 from argparse import ArgumentParser
 
+print("yes")
 
 parser = ArgumentParser()
 parser.add_argument("-s", "--subjectid")
