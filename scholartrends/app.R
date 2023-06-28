@@ -1,32 +1,44 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(tidyverse)
+library(scholar)
+library(scales)
+library(shinydashboard)
+
+source("process-gscholar.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("Publication Trends"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
-        sidebarPanel(
-            textInput("user_input", "Enter text:"),
+        sidebarPanel(width = 12,
+            textInput("user_input", "Google Scholar URL:"),
             actionButton("enter_button", "Enter")
 
     ),
 
         # Show a plot of the generated distribution
-        mainPanel(
-           verbatimTextOutput("output_text")
+
+        #width = 12 for full width
+        mainPanel(width = 12,
+           tags$div(
+            style = "font-size: 30px; text-align: center;",
+            textOutput("intro")
+          ),
+           tags$br(), 
+           tags$br(),
+           plotOutput("ppy"),
+           tags$br(),
+           plotOutput("jc"),
+           tags$br(),
+           plotOutput("auth"),
+           tags$br(),
+           plotOutput("cpy"),
+           tags$br(),
+           plotOutput("jpy")
         )
     )
 )
@@ -72,24 +84,81 @@ server <- function(input, output) {
 
     })
 
+    sizing_theme <- theme(axis.text = element_text(size=12), axis.title=element_text(size=16), legend.text=element_text(size=14), legend.title=element_text(size=16), plot.title=element_text(size=18, hjust=0.5)) 
 
-    
-    output$output_text <- renderPrint({
+    panel_theme <- theme_bw() + theme(panel.grid.major.x = element_blank(), panel.grid.minor=element_blank())
+
+
+    output$intro <- renderText({
 
         id <- getData()
 
-
         if (!is.null(id)){
-            
-            system(paste0('python3 analysis.py --subjectid ', id))
 
-            paste("URL processed: ", id)
+            author <- get_profile(id)$name
+
+            author
+
         }
 
     })
 
+    output$cpy <- renderPlot({
+
+        id <- getData()
+
+        if (!is.null(id)){
+            
+            citations_per_year(id, sizing_theme, panel_theme) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12)) + ylab("# of citations") + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+
+        }
+    })
+
+    output$ppy <- renderPlot({
+
+        id <- getData()
+
+        if (!is.null(id)){
+            
+            pubs_per_year(id, sizing_theme, panel_theme) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12)) + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+
+        }
+    })
 
 
+    output$jc<- renderPlot({
+
+        id <- getData()
+
+        if (!is.null(id)){
+            
+            journal_counts(id, sizing_theme, panel_theme) + ggtitle("Most frequently published journals") + theme(plot.title = element_text(size = 18, hjust = 0.5), axis.title = element_text(size=16), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 10)) 
+
+        }
+    })
+
+    output$jpy <- renderPlot({
+
+        id <- getData()
+
+        if (!is.null(id)){
+            
+            journal_per_year(id, sizing_theme, panel_theme) + theme(plot.title = element_text(size = 18, hjust = 0.5), axis.title = element_text(size=16), axis.text = element_text(size = 12))
+
+        }
+    })
+
+    output$auth <- renderPlot({
+
+        id <- getData()
+
+        if (!is.null(id)){
+            
+            auth_numbers(id, sizing_theme, panel_theme) + ggtitle("Total # of lead authorships") + theme(plot.title = element_text(size = 18, hjust = 0.5))
+
+        }
+    })
+    
 
 }
 
