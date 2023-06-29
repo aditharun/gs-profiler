@@ -2,7 +2,8 @@ library(shiny)
 library(tidyverse)
 library(scholar)
 library(scales)
-library(shinydashboard)
+library(htmltools)
+library(cowplot)
 
 source("process-gscholar.R")
 
@@ -24,6 +25,7 @@ ui <- fluidPage(
 
         #width = 12 for full width
         mainPanel(width = 12,
+            "Created by ", a("Adith Arun", href="https://aditharun.github.io", target="_blank"),
            tags$div(
             style = "font-size: 30px; text-align: center;",
             textOutput("intro")
@@ -34,12 +36,9 @@ ui <- fluidPage(
            tags$br(),
            plotOutput("jc"),
            tags$br(),
-           plotOutput("auth"),
-           tags$br(),
            plotOutput("cpy"),
            tags$br(),
-           plotOutput("jpy")
-        )
+           plotOutput("jpy")      )
     )
 )
 
@@ -109,7 +108,7 @@ server <- function(input, output) {
 
         if (!is.null(id)){
             
-            citations_per_year(id, sizing_theme, panel_theme) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12)) + ylab("# of citations") + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+            citations_per_year(id, sizing_theme, panel_theme) 
 
         }
     })
@@ -120,7 +119,7 @@ server <- function(input, output) {
 
         if (!is.null(id)){
             
-            pubs_per_year(id, sizing_theme, panel_theme) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12)) + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+            pubs_per_year(id, sizing_theme, panel_theme) 
 
         }
     })
@@ -132,7 +131,7 @@ server <- function(input, output) {
 
         if (!is.null(id)){
             
-            journal_counts(id, sizing_theme, panel_theme) + ggtitle("Most frequently published journals") + theme(plot.title = element_text(size = 18, hjust = 0.5), axis.title = element_text(size=16), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 10)) 
+            plot_grid(journal_counts(id, sizing_theme, panel_theme), auth_numbers(id, sizing_theme, panel_theme), nrow = 1, rel_widths = c(1.5, 1))
 
         }
     })
@@ -148,15 +147,11 @@ server <- function(input, output) {
         }
     })
 
-    output$auth <- renderPlot({
+    output$credit <- renderText({
 
-        id <- getData()
 
-        if (!is.null(id)){
-            
-            auth_numbers(id, sizing_theme, panel_theme) + ggtitle("Total # of lead authorships") + theme(plot.title = element_text(size = 18, hjust = 0.5))
+        paste0("Created by ")
 
-        }
     })
     
 

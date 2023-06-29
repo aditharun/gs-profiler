@@ -1,7 +1,7 @@
 library(tidyverse)
 library(scholar)
 library(scales)
-
+library(cowplot)
 
 extract_author <- function(s, author_name){
 
@@ -76,9 +76,13 @@ citations_per_year <- function(id, sizing_theme, panel_theme){
 
     cites_per_year <- cites_per_year %>% right_join(year_range, by=c("year"="years")) %>% mutate(cites = ifelse(is.na(cites), 0, cites))
 
-    citesperyear.fig <- cites_per_year %>% ggplot(aes(x=year, y=cites)) + geom_point(size = 2.5) + geom_line(linewidth = 1) + sizing_theme + panel_theme + xlab("Year") + ylab("$ of citations") + ggtitle(paste0("Citations per year")) + theme(plot.title = element_text(hjust = 0.5), panel.grid.major.y = element_line(color = "grey70", linewidth = 0.2)) + yearlabel(c(min(cites_per_year$year), max(cites_per_year$year))) + scale_y_continuous(breaks = pretty_breaks(8))
+    cites_per_year <- cites_per_year %>% arrange(year) %>% mutate(cumcites = cumsum(cites))
 
-    return(citesperyear.fig)
+    citesperyear.fig <- cites_per_year %>% ggplot(aes(x=year, y=cites)) + geom_point(size = 2.5) + geom_line(linewidth = 1) + sizing_theme + panel_theme + xlab("Year") + ylab("# of citations") + ggtitle(paste0("Citations")) + theme(plot.title = element_text(hjust = 0.5), panel.grid.major.y = element_line(color = "grey70", linewidth = 0.2)) + yearlabel(c(min(cites_per_year$year), max(cites_per_year$year))) + scale_y_continuous(breaks = pretty_breaks(6)) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12)) + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+
+    cumcitesperyear.fig <- cites_per_year %>% ggplot(aes(x=year, y=cumcites)) + geom_point(size = 2.5) + geom_line(linewidth = 1) + sizing_theme + panel_theme + xlab("Year") + ggtitle(paste0("Cumulative citations")) + theme(plot.title = element_text(hjust = 0.5), panel.grid.major.y = element_line(color = "grey70", linewidth = 0.2)) + yearlabel(c(min(cites_per_year$year), max(cites_per_year$year))) + scale_y_continuous(breaks = pretty_breaks(6)) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12))  + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + ylab("")
+
+    return(plot_grid(citesperyear.fig, cumcitesperyear.fig, nrow = 1))
 
 }
 
@@ -97,9 +101,15 @@ pubs_per_year <- function(id, sizing_theme, panel_theme){
 
     limits.pubrate <- c(min(pubrate$years), max(pubrate$years))
 
-    pubsperyear.fig <- pubrate %>% ggplot(aes(x=years, y=n.pubs)) + geom_point(size = 2.5) + geom_line(linewidth = 1) + sizing_theme + panel_theme + xlab("Year") + ylab("# of publications") + theme(panel.grid.major.y = element_line(color = "grey70", linewidth = 0.2)) + yearlabel(limits.pubrate) + ggtitle(paste0("Publications per year")) + theme(plot.title = element_text(hjust = 0.5)) + scale_y_continuous(breaks = pretty_breaks(15))
+    pubrate <- pubrate %>% mutate(cumpubs  = cumsum(n.pubs))
 
-    return(pubsperyear.fig)
+    cumpubs.fig <- pubrate %>% ggplot(aes(x=years, y=cumpubs)) + geom_point(size = 2.5) + geom_line(linewidth = 1) + sizing_theme + panel_theme + xlab("Year") + ylab("") + theme(panel.grid.major.y = element_line(color = "grey70", linewidth = 0.2)) + yearlabel(limits.pubrate) + ggtitle(paste0("Cumulative pubs")) + theme(plot.title = element_text(hjust = 0.5)) + scale_y_continuous(breaks = pretty_breaks(5)) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12)) + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+
+    pubsperyear.fig <- pubrate %>% ggplot(aes(x=years, y=n.pubs)) + geom_point(size = 2.5) + geom_line(linewidth = 1) + sizing_theme + panel_theme + xlab("Year") + ylab("# of Publications") + theme(panel.grid.major.y = element_line(color = "grey70", linewidth = 0.2)) + yearlabel(limits.pubrate) + ggtitle(paste0("Publications")) + theme(plot.title = element_text(hjust = 0.5)) + scale_y_continuous(breaks = pretty_breaks(10)) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12)) + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+
+    ppy.fig <- plot_grid(pubsperyear.fig, cumpubs.fig, nrow = 1)
+
+    return(ppy.fig)
 
 
 }
@@ -111,7 +121,7 @@ journal_counts <- function(id, sizing_theme, panel_theme){
         #Top 20 journals 
     jc <- journalcounts %>% filter(journal != "") %>% arrange(desc(count)) %>% mutate(idx = 1:n()) %>% filter(idx <= 25)
 
-    journalcounts.fig <- jc %>% ggplot(aes(y = factor(idx), x = count)) + geom_col(alpha = 0.75, color="grey50", fill = "grey50") + scale_y_discrete(name = "", labels = str_wrap(jc$journal, 60)) + sizing_theme + panel_theme + xlab("# of Publications") + theme(panel.grid.major.y =  element_blank(), panel.grid.major.x = element_line(color = "grey70", linewidth = 0.2)) + scale_x_continuous(breaks = pretty_breaks(8))
+    journalcounts.fig <- jc %>% ggplot(aes(y = factor(idx), x = count)) + geom_col(alpha = 0.75, color="grey50", fill = "grey50") + scale_y_discrete(name = "", labels = str_wrap(jc$journal, 60)) + sizing_theme + panel_theme + xlab("# of Publications") + theme(panel.grid.major.y =  element_blank(), panel.grid.major.x = element_line(color = "grey70", linewidth = 0.2)) + scale_x_continuous(breaks = pretty_breaks(8)) + ggtitle("Most frequently published journals") + theme(plot.title = element_text(size = 18, hjust = 0.5), axis.title = element_text(size=16), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 10)) 
 
     return(journalcounts.fig)
 
@@ -154,7 +164,8 @@ auth_numbers <- function(id, sizing_theme, panel_theme){
     auth_positions$lead <- lapply(auth_positions$author, function(x) extract_author(x, baseinfo$author) ) %>% unlist()
 
     authpos.fig <- auth_positions %>% filter(!is.na(lead)) %>% pull(lead) %>% table() %>% as_tibble() %>% magrittr::set_colnames(c("pos", "n")) %>% filter(pos <= 4) %>% mutate(percent = round(((n / nrow(auth_positions))*100), 2)) %>% ggplot(aes(x=pos, y=n)) + geom_col(alpha = 0.75, color="grey50", fill = "grey50") + panel_theme + sizing_theme + xlab("Author Position") + ylab("# of Pubs") + scale_y_continuous(
-    sec.axis = sec_axis(trans = ~ (. / nrow(auth_positions))*100, name = "% of Total Pubs"))
+    sec.axis = sec_axis(trans = ~ (. / nrow(auth_positions))*100, name = "% of Total Pubs")) + ggtitle("Lead authorships") + theme(plot.title = element_text(size = 18, hjust = 0.5))
+
 
     return(authpos.fig)
 

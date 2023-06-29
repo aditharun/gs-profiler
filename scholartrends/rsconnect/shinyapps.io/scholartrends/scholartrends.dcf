@@ -1,0 +1,11 @@
+name: scholartrends
+title:
+username:
+account: scholartrends
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9382147
+bundleId: 7400390
+url: https://scholartrends.shinyapps.io/scholartrends/
+when: 1688010813.01361
+lastSyncTime: 1688010813.01362
