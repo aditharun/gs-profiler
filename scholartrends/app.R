@@ -5,6 +5,8 @@ library(scales)
 library(htmltools)
 library(cowplot)
 
+source("tweak-scholar.R")
+
 source("process-gscholar.R")
 
 # Define UI for application that draws a histogram

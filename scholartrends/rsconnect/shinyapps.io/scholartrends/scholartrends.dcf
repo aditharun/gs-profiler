@@ -5,7 +5,7 @@ account: scholartrends
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 9382147
-bundleId: 7400390
+bundleId: 7404756
 url: https://scholartrends.shinyapps.io/scholartrends/
-when: 1688010813.01361
-lastSyncTime: 1688010813.01362
+when: 1688104421.03677
+lastSyncTime: 1688104421.0368
