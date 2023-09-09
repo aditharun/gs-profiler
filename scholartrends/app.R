@@ -104,6 +104,8 @@ server <- function(input, output) {
 
     })
 
+    #address 2023 cliff, make prettier, heatmap fix
+
     output$cpy <- renderPlot({
 
         id <- getData()

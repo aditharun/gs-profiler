@@ -78,16 +78,15 @@ citations_per_year <- function(id, sizing_theme, panel_theme){
 
     cites_per_year <- cites_per_year %>% arrange(year) %>% mutate(cumcites = cumsum(cites))
 
-    citesperyear.fig <- cites_per_year %>% ggplot(aes(x=year, y=cites)) + geom_point(size = 2.5) + geom_line(linewidth = 1) + sizing_theme + panel_theme + xlab("Year") + ylab("# of citations") + ggtitle(paste0("Citations")) + theme(plot.title = element_text(hjust = 0.5), panel.grid.major.y = element_line(color = "grey70", linewidth = 0.2)) + yearlabel(c(min(cites_per_year$year), max(cites_per_year$year))) + scale_y_continuous(breaks = pretty_breaks(6)) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12)) + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+    nejm_colors <- c("#1A237E", "#039BE5", "#D32F2F", "#388E3C", "#FBC02D", "#9E9E9E")
 
-    cumcitesperyear.fig <- cites_per_year %>% ggplot(aes(x=year, y=cumcites)) + geom_point(size = 2.5) + geom_line(linewidth = 1) + sizing_theme + panel_theme + xlab("Year") + ggtitle(paste0("Cumulative citations")) + theme(plot.title = element_text(hjust = 0.5), panel.grid.major.y = element_line(color = "grey70", linewidth = 0.2)) + yearlabel(c(min(cites_per_year$year), max(cites_per_year$year))) + scale_y_continuous(breaks = pretty_breaks(6)) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12))  + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + ylab("")
+    citesperyear.fig <- cites_per_year %>% ggplot(aes(x=year, y=cites)) + geom_point(size = 2.5, color=nejm_colors[1]) + geom_line(linewidth = 1, color=nejm_colors[1]) + sizing_theme + panel_theme + xlab("Year") + ylab("# of citations") + ggtitle("Citations") + theme(plot.title = element_text(hjust = 0.5)) + yearlabel(c(min(cites_per_year$year), max(cites_per_year$year))) + scale_y_continuous(breaks = pretty_breaks(6)) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12)) + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))
+
+    cumcitesperyear.fig <- cites_per_year %>% ggplot(aes(x=year, y=cumcites), color=nejm_colors[2]) + geom_point(size = 2.5) + geom_line(linewidth = 1) + sizing_theme + panel_theme + xlab("Year") + ggtitle(paste0("Cumulative citations")) + theme(plot.title = element_text(hjust = 0.5)) + yearlabel(c(min(cites_per_year$year), max(cites_per_year$year))) + scale_y_continuous(breaks = pretty_breaks(6)) + theme(plot.title = element_text(size = 18), axis.title = element_text(size=16), axis.text.y = element_text(size = 12))  + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + ylab("")
 
     return(plot_grid(citesperyear.fig, cumcitesperyear.fig, nrow = 1))
 
 }
-
-
-
 
 
 pubs_per_year <- function(id, sizing_theme, panel_theme){
